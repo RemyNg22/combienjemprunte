@@ -1,4 +1,4 @@
-# combienjemprunte : Simulateur de capacité d'emprunt
+# Combienjemprunte : Simulateur de capacité d'emprunt
 
 Combienjemprunte.com est un simulateur personnel de capacité d'emprunt pour découvrir quel bien immobilier vous pouvez acheter, à l'aide de vos revenus, des charges et taux de crédits actuels.
 Le logiciel est développé en **Python** avec une interface web **HTML/Flask**
