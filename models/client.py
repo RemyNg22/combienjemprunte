@@ -4,13 +4,16 @@ from models.charge import Charge
 class Client:
     """
     Représente un client avec ses revenus et ses charges pour 
-    calculer sa capacité d'emprunt
+    calculer sa capacité d'emprunt, avec son apport et son revenu 
+    fiscal de référence pour estimer la capacité d'achat et PTZ
     """
 
-    def __init__(self, nom: str):
+    def __init__(self, nom: str, apport: float, revenu_fiscal_reference: int):
         self.nom = nom
         self.revenu: list[Revenu] = []
         self.charge: list[Charge] = []
+        self.apport = apport
+        self.revenu_fiscal_reference = revenu_fiscal_reference
 
     def ajouter_revenu(self, revenus: Revenu):
         """
@@ -31,24 +34,20 @@ class Client:
         Agrège tous les revenus annuels et mensuels pour 
         les mensualiser
         """
-        total_annuel = 0.0
+        total_mensuel = 0.0
         for r in self.revenu:
             if r.periodicite == "Annuelle":
-                total_annuel += r
+                total_mensuel += (r.revenu_pondere/12)
 
             elif r.periodicite == "Mensuelle":
-                total_annuel += (r*12)
+                total_mensuel += r.revenu_pondere
 
-        return round(total_annuel/12, 2)
+        return round(total_mensuel, 2)
     
 
     @property
-    def total_charge_mensuel(self):
+    def total_charge_mensuelle(self):
         """
         Agrège toutes les charges pour les mensualiser
         """
-        total_annuel = 0.0
-        for r in self.charge:
-            total_annuel +=r
-
-        return r/12
+        return round(sum(c.montant for c in self.charge))

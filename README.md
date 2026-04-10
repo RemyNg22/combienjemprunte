@@ -23,23 +23,24 @@ Lien vers le notebook :
 combienjemprunte/
 
 ├── app.py                  #point d'entrée, routes flask
-├── config.py               #paramètre globaux (taux de crédit)
 ├── session_store.py        # Stockage en mémoire serveur (temporaire)
 ├── README.md               # Description projet
 ├── requirements.txt        # à installer
 ├── .gitignore              # à masquer
 |
 ├── models/
-│   ├── 
-│   └── 
+│   ├── client.py           # POO objet Client
+│   ├── charge.py           # POO objet charge
+│   └── revenu.py           # POO objet revenu
 |
 ├── services/
-│   ├── 
-│   └── 
+│   ├── regles.py           # Définit toutes les règles pour les calculs
+│   ├── capacite_emprunt.py # Calcul la mensualité max et capacité d'emprunt avec taux classique
+│   └── pret_taux_zero.py
 |
-├── static/
-│   ├── 
-│   └── 
+├── data/
+│   ├── liste_communes_zonage_sept_2025.xlsx    # Permet de trouver le zonage de sa commune
+│   └── zonage.py                               # Extrait les zones du xlsx
 |
 ```
 

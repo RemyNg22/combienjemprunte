@@ -21,3 +21,6 @@ class Charge:
         
         self.type_depense = type_depense
         self.montant = float(montant)
+
+    def __repr__(self):
+        return f"Charge : {self.type_depense} - {self.montant}€/mois"
