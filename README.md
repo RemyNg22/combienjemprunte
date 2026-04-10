@@ -29,6 +29,7 @@ combienjemprunte/
 ├── .gitignore              # à masquer
 |
 ├── models/
+│   ├── dossier.py          # Agrège les différents clients
 │   ├── client.py           # POO objet Client
 │   ├── charge.py           # POO objet charge
 │   └── revenu.py           # POO objet revenu
@@ -36,12 +37,22 @@ combienjemprunte/
 ├── services/
 │   ├── regles.py           # Définit toutes les règles pour les calculs
 │   ├── capacite_emprunt.py # Calcul la mensualité max et capacité d'emprunt avec taux classique
-│   └── pret_taux_zero.py
+│   ├── pret_taux_zero.py   # Calcul le montant du PTZ et voit si éligible ou pas
+│   └── cout_total.py       # Calcul le montant d'acquisition possible avec frais de notaire et annexes (PTZ inclu ou pas)
 |
 ├── data/
 │   ├── liste_communes_zonage_sept_2025.xlsx    # Permet de trouver le zonage de sa commune
 │   └── zonage.py                               # Extrait les zones du xlsx
 |
+|
+├── templates/
+│   ├── base.html
+│   ├── etape_accueil.html
+│   ├── etape_revenu.html
+│   ├── etape_charge.html
+│   ├── etape_ptz.html
+│   ├── resultat.html
+│   └── a_propos.html
 ```
 
 ## Lancement du projet
