@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto mb-4">
+    <a href="javascript:history.back()" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-brand-red transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Retour à l'étape précédente
+    </a>
+</div>
+<div class="max-w-4xl mx-auto">
+
+    <!-- Bandeau pédagogique -->
+    <div class="bg-blue-50 border border-blue-100 rounded-2xl p-5 mb-6 flex gap-4">
+        <div>
+            <p class="font-bold text-blue-900 mb-1">Étape 2 sur 4 — Les revenus</p>
+            <p class="text-sm text-blue-700 leading-relaxed">
+                Saisissez <strong>tous les revenus stables</strong> qui entreront dans le dossier bancaire.
+                Les banques appliquent une <strong>pondération</strong> selon la nature du revenu :
+                un CDI compte à 100%, un revenu locatif à 70%, une prime variable à 50% (attention, chaque banque applique sa pondération).
+                Les allocations chômage, RSA et APL ne sont pas pris en compte.
+                Vous pouvez saisir un montant mensuel <em>ou</em> annuel.
+            </p>
+        </div>
+    </div>
+
+    <div class="flex items-center space-x-4 mb-6">
+        <div class="bg-brand-red text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">2</div>
+        <h1 class="text-2xl font-bold text-gray-800">Vos Revenus</h1>
+    </div>
+
+    {% if error %}
+    <div class="bg-red-50 text-red-700 p-4 rounded-lg mb-6 border border-red-100 text-sm">⚠️ {{ error }}</div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Formulaire ajout -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
+            <h2 class="text-lg font-bold mb-4 text-brand-red">Ajouter un revenu</h2>
+            <form method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Attribuer à</label>
+                    <select name="client_idx" class="w-full p-3 border rounded-lg bg-gray-50 outline-none">
+                        {% for c in clients %}
+                        <option value="{{ loop.index0 }}">{{ c.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Nature du revenu</label>
+                    <select name="type" id="type-revenu" class="w-full p-3 border rounded-lg bg-white outline-none" onchange="updatePonderation(this)">
+                        {% for t in types_revenu %}
+                        <option value="{{ t }}">{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                    <p id="ponderation-hint" class="text-[10px] mt-1 font-semibold text-green-700">✓ Pris en compte à 100%</p>
+                </div>
+
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Montant (€)</label>
+                        <input type="number" name="montant" step="1" min="1" class="w-full p-3 border rounded-lg" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Fréquence</label>
+                        <select name="periodicite" class="w-full p-3 border rounded-lg bg-white">
+                            <option value="Mensuelle">/ mois</option>
+                            <option value="Annuelle">/ an</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit"
+                        class="w-full bg-gray-800 text-white py-3 rounded-xl font-bold hover:bg-gray-700 transition">
+                    + Ajouter à la liste
+                </button>
+            </form>
+        </div>
+
+        <!-- Récapitulatif -->
+        <div class="space-y-6">
+            {% for c in clients %}
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="font-bold text-gray-900 border-b pb-2 mb-4 flex justify-between">
+                    <span>{{ c.nom }}</span>
+                    <span class="text-brand-red text-sm">Revenus</span>
+                </h3>
+                {% if c.revenus %}
+                <ul class="space-y-3">
+                    {% for r in c.revenus %}
+                    <li class="flex justify-between text-sm bg-gray-50 p-2 rounded border border-gray-100">
+                        <span class="text-gray-600">{{ r.type }}</span>
+                        <span class="font-bold">
+                            {{ "{:,.0f}".format(r.montant).replace(',', '\u00a0') }} €
+                            <span class="font-normal text-gray-400 text-xs">/ {{ "mois" if r.periodicite == "Mensuelle" else "an" }}</span>
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-gray-400 text-xs italic text-center py-4">Aucun revenu saisi.</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <form method="POST">
+                <button type="submit" name="finaliser_revenus" value="1"
+                        class="w-full bg-brand-red text-white py-4 rounded-xl font-bold hover-brand-red shadow-lg transform hover:scale-[1.02] transition">
+                    Continuer vers les charges →
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const PONDERATIONS = {
+    "Salaire CDI": 1.0,
+    "Salaire fonctionnaire": 1.0,
+    "Retraite": 1.0,
+    "Pension d'invalidité": 1.0,
+    "Revenu non salarié stable (3 ans)": 1.0,
+    "Revenu locatif": 0.7,
+    "Prime contractuelle / 13e mois": 0.7,
+    "Prime variable": 0.5,
+    "Allocations familiales": 0.5,
+    "Prime d'activité": 0.0,
+    "APL": 0.0,
+    "Allocations chômage": 0.0,
+    "RSA": 0.0,
+    "Bourse étudiante": 0.0,
+    "Autre": 0.0
+};
+
+function updatePonderation(select) {
+    const val = select.value;
+    const p = PONDERATIONS[val] ?? 0;
+    const hint = document.getElementById('ponderation-hint');
+    if (p === 1.0) {
+        hint.textContent = '✓ Pris en compte à 100%';
+        hint.className = 'text-[10px] mt-1 font-semibold text-green-700';
+    } else if (p > 0) {
+        hint.textContent = `⚠ Pris en compte à ${Math.round(p*100)}% (revenu partiel)`;
+        hint.className = 'text-[10px] mt-1 font-semibold text-orange-600';
+    } else {
+        hint.textContent = '✗ Non pris en compte par les banques';
+        hint.className = 'text-[10px] mt-1 font-semibold text-red-600';
+    }
+}
+// Init au chargement
+document.addEventListener('DOMContentLoaded', () => updatePonderation(document.getElementById('type-revenu')));
+</script>
+{% endblock %}

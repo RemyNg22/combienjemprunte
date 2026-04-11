@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+
+    <!-- Bandeau pédagogique -->
+    <div class="bg-blue-50 border border-blue-100 rounded-2xl p-5 mb-6 flex gap-4">
+
+        <div>
+            <p class="font-bold text-blue-900 mb-1">Étape 1 sur 4 — Les emprunteurs</p>
+            <p class="text-sm text-blue-700 leading-relaxed">
+                Indiquez le nom de chaque personne dont les revenus seront pris en compte pour le crédit.
+                Si vous achetez seul, saisissez uniquement votre nom. Pour un couple, ajoutez un co-emprunteur.
+                <strong>L'apport</strong> est la somme que vous pouvez mettre de votre poche (épargne, donation…),
+                hors précaution d'urgence.
+            </p>
+        </div>
+    </div>
+
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+        <div class="flex items-center space-x-4 mb-8">
+            <div class="bg-brand-red text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">1</div>
+            <h1 class="text-2xl font-bold">Qui participe au projet ?</h1>
+        </div>
+
+        {% if error %}
+        <div class="bg-red-50 text-red-700 p-4 rounded-lg mb-6 border border-red-100 text-sm">⚠️ {{ error }}</div>
+        {% endif %}
+
+        <form method="POST" id="client-form">
+            <div id="clients-container" class="space-y-6 mb-6">
+                <div class="p-4 border border-gray-200 rounded-xl space-y-3">
+                    <p class="text-sm font-bold text-gray-500 uppercase tracking-wider">Emprunteur 1</p>
+                    <div class="flex flex-col">
+                        <label class="text-sm font-semibold mb-1">Prénom / Nom</label>
+                        <input type="text" name="noms" placeholder="Ex : Jean Dupont"
+                               class="p-3 border rounded-lg focus:ring-2 focus:ring-red-200 border-gray-300 outline-none" required>
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-sm font-semibold mb-1">Apport personnel (€)</label>
+                        <div class="relative">
+                            <input type="number" name="apports" min="0" step="100" placeholder="0"
+                                   class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-red-200 border-gray-300 outline-none pr-8">
+                            <span class="absolute right-3 top-3 text-gray-400">€</span>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-1">Épargne disponible pour l'achat, hors précaution d'urgence.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" onclick="addClient()"
+                    class="text-brand-red font-semibold text-sm hover:underline flex items-center mb-8">
+                + Ajouter un co-emprunteur
+            </button>
+
+            <button type="submit"
+                    class="w-full bg-brand-red text-white py-4 rounded-xl font-bold hover-brand-red transition shadow-lg">
+                Continuer vers les revenus →
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function addClient() {
+        const container = document.getElementById('clients-container');
+        const count = container.children.length + 1;
+        const div = document.createElement('div');
+        div.className = "p-4 border border-gray-200 rounded-xl space-y-3";
+        div.innerHTML = `
+            <div class="flex justify-between items-center">
+                <p class="text-sm font-bold text-gray-500 uppercase tracking-wider">Emprunteur ${count}</p>
+                <button type="button" onclick="this.closest('div.p-4').remove()"
+                        class="text-gray-400 hover:text-red-500 font-bold text-lg leading-none">✕</button>
+            </div>
+            <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-1">Prénom / Nom</label>
+                <input type="text" name="noms" placeholder="Ex : Marie Dupont"
+                       class="p-3 border rounded-lg focus:ring-2 focus:ring-red-200 border-gray-300 outline-none" required>
+            </div>
+            <div class="flex flex-col">
+                <label class="text-sm font-semibold mb-1">Apport personnel (€)</label>
+                <div class="relative">
+                    <input type="number" name="apports" min="0" step="100" placeholder="0"
+                           class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-red-200 border-gray-300 outline-none pr-8">
+                    <span class="absolute right-3 top-3 text-gray-400">€</span>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+</script>
+{% endblock %}

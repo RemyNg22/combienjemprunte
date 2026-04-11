@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto text-center py-12">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+        Combien pouvez-vous <span class="text-brand-red">emprunter</span> en 2026 ?
+    </h1>
+    <p class="text-xl text-gray-600 mb-10 leading-relaxed max-w-2xl mx-auto">
+        Obtenez une simulation précise de votre capacité d'achat immobilier. 
+        Notre outil intègre les dernières réformes du <strong>Prêt à Taux Zéro (PTZ)</strong> et les taux d'intérêt actuels.
+    </p>
+    
+    <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 inline-block w-full max-w-md">
+        <h2 class="text-lg font-bold mb-4">Prêt à commencer ?</h2>
+        <p class="text-gray-500 text-sm mb-6">L'étude dure environ 2 minutes et est totalement gratuite.</p>
+        <a href="/client" class="block bg-brand-red text-white text-lg font-bold py-4 px-8 rounded-xl hover-brand-red transition shadow-lg transform hover:scale-105">
+            Lancer mon étude gratuite
+        </a>
+    </div>
+
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+        <div class="p-4">
+            <h3 class="font-bold text-brand-red mb-2 underline decoration-2">Rapide</h3>
+            <p class="text-sm text-gray-500">Saisie simplifiée de vos revenus et charges en quelques clics.</p>
+        </div>
+        <div class="p-4">
+            <h3 class="font-bold text-brand-red mb-2 underline decoration-2">À jour</h3>
+            <p class="text-sm text-gray-500">Calculs basés sur le zonage officiel de septembre 2025.</p>
+        </div>
+        <div class="p-4">
+            <h3 class="font-bold text-brand-red mb-2 underline decoration-2">Complet</h3>
+            <p class="text-sm text-gray-500">Comparatif Ancien vs Neuf pour optimiser votre budget.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

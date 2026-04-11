@@ -132,40 +132,59 @@ def calcul_ptz(prix_bien: float,
                zone: str,
                nb_personnes: int,
                type_bien: str = "appartement"):
-    
     """
-    Fonction de calcul du PTZ
+    Fonction de calcul du PTZ avec Barème 2026 (Lissage et Mensualités)
     """
 
-    # Eligibilité
     if not est_eligible(rfr, zone, nb_personnes):
         return {
             "eligible": False,
             "ptz": 0,
+            "mensualite_ptz": 0,
             "tranche": None,
             "quotite": 0
         }
     
-    #Tranche
     tranche = calcul_tranche(rfr, zone, nb_personnes)
 
-    #Quotité
     quotite = get_quotite(tranche, type_bien)
 
-    # Plafond d'opération
     plafond = get_plafond_operation(zone, nb_personnes)
 
     base = min(prix_bien, plafond)
 
-    #Calcul PTZ
-    ptz = base * quotite
+    montant_ptz = base * quotite
+
+    durees_p2 = {
+        1: 15,
+        2: 12,
+        3: 13,
+        4: 10
+    }
+    
+    differes_p1 = {
+        1: 10,
+        2: 8,
+        3: 2,
+        4: 0
+    }
+
+    annees_p2 = durees_p2.get(tranche, 10)
+    annees_p1 = differes_p1.get(tranche, 0)
+
+    mensualite_ptz = 0
+    if montant_ptz > 0:
+        mensualite_ptz = montant_ptz / (annees_p2 * 12)
 
     return {
         "eligible": True,
-        "ptz": round(ptz, 2),
+        "ptz": round(montant_ptz, 2),
+        "mensualite_ptz": round(mensualite_ptz, 2),
         "tranche": tranche,
         "quotite": quotite,
         "plafond_operation": plafond,
         "base_calcul": base,
-        "nb_personnes": nb_personnes
+        "duree_differe_p1": annees_p1,
+        "duree_remboursement_p2": annees_p2,
+        "total_duree": annees_p1 + annees_p2
     }

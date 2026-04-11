@@ -8,12 +8,11 @@ class Client:
     fiscal de référence pour estimer la capacité d'achat et PTZ
     """
 
-    def __init__(self, nom: str, apport: float, revenu_fiscal_reference: int):
+    def __init__(self, nom: str, apport: float):
         self.nom = nom
         self.revenu: list[Revenu] = []
         self.charge: list[Charge] = []
         self.apport = apport
-        self.revenu_fiscal_reference = revenu_fiscal_reference
 
     def ajouter_revenu(self, revenus: Revenu):
         """
@@ -50,4 +49,4 @@ class Client:
         """
         Agrège toutes les charges pour les mensualiser
         """
-        return round(sum(c.montant for c in self.charge))
+        return round(sum(c.montant for c in self.charge), 2)

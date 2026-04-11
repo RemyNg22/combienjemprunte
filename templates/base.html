@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CombienJemprunte.com - Simulateur Prêt Immobilier & PTZ 2026</title>
+    <meta name="description" content="Simulez gratuitement votre capacité d'emprunt et votre éligibilité au Prêt à Taux Zéro (PTZ) avec les règles de 2026.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-brand-red { background-color: #b32d2e; }
+        .text-brand-red { color: #b32d2e; }
+        .border-brand-red { border-color: #b32d2e; }
+        .hover-brand-red:hover { background-color: #912425; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-2">
+                <img src="/static/img/logo.png" alt="combienjemprunte.com" class="h-20 md:h-26">
+            </a>
+            <div class="hidden md:flex space-x-6 font-medium">
+                <a href="/" class="hover:text-brand-red transition">Simulateur</a>
+                <a href="/a-propos" class="hover:text-brand-red transition">À propos</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm text-gray-500 italic mb-4 uppercase tracking-widest">Simulateur de crédit en ligne</p>
+            <p class="text-xs text-gray-400">&copy; 2026 CombienJemprunte.com - Données indicatives non contractuelles.</p>
+        </div>
+    </footer>
+</body>
+</html>

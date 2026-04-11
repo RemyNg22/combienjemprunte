@@ -9,6 +9,7 @@ class Dossier:
     def __init__(self):
         self.clients: list[Client] = []
         self.nb_personnes_charge = 0
+        self.rfr = 0
 
     def ajouter_client(self, client: Client):
         if not isinstance(client, Client):
@@ -34,9 +35,9 @@ class Dossier:
         return sum(c.apport for c in self.clients)
 
     @property
-    def total_rfr(self):
-        return sum(c.revenu_fiscal_reference for c in self.clients)
-
-    @property
     def nb_personnes(self):
         return len(self.clients) + self.nb_personnes_charge
+    
+    @property
+    def total_rfr(self):
+        return self.rfr

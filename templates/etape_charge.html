@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto mb-4">
+    <a href="javascript:history.back()" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-brand-red transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Retour à l'étape précédente
+    </a>
+</div>
+<div class="max-w-4xl mx-auto">
+
+    <!-- Bandeau pédagogique -->
+    <div class="bg-blue-50 border border-blue-100 rounded-2xl p-5 mb-6 flex gap-4">
+        <div>
+            <p class="font-bold text-blue-900 mb-1">Étape 3 sur 4 — Les charges</p>
+            <p class="text-sm text-blue-700 leading-relaxed">
+                Déclarez ici les <strong>crédits et charges déjà en cours</strong> qui seront vérifiés par la banque.
+                Le taux d'endettement maximum autorisé est de <strong>35%</strong> de vos revenus nets.
+                Votre futur crédit immobilier s'ajoutera à ces charges pour le calcul.
+                Si vous n'avez aucune charge, passez directement à l'étape suivante.
+            </p>
+        </div>
+    </div>
+
+    <div class="flex items-center space-x-4 mb-6">
+        <div class="bg-brand-red text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">3</div>
+        <h1 class="text-2xl font-bold text-gray-800">Vos Charges Mensuelles</h1>
+    </div>
+
+    {% if error %}
+    <div class="bg-red-50 text-red-700 p-4 rounded-lg mb-6 border border-red-100 text-sm">⚠️ {{ error }}</div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Formulaire -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
+            <h2 class="text-lg font-bold mb-4 text-brand-red">Déclarer une charge</h2>
+            <form method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Qui paie ?</label>
+                    <select name="client_idx" class="w-full p-3 border rounded-lg bg-gray-50 outline-none">
+                        {% for c in clients %}
+                        <option value="{{ loop.index0 }}">{{ c.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Nature de la charge</label>
+                    <select name="type" class="w-full p-3 border rounded-lg bg-white outline-none">
+                        {% for t in types_charge %}
+                        <option value="{{ t }}">{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="text-[10px] text-gray-400 mt-1 italic">
+                        "Loyer persistant" = loyer actuel que vous continuerez à payer après l'achat.
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Mensualité (€)</label>
+                    <div class="relative">
+                        <input type="number" name="montant" step="1" min="1" class="w-full p-3 border rounded-lg pr-8"
+                               placeholder="0" required>
+                        <span class="absolute right-3 top-3 text-gray-400">€</span>
+                    </div>
+                </div>
+
+                <button type="submit"
+                        class="w-full bg-gray-800 text-white py-3 rounded-xl font-bold hover:bg-gray-700 transition">
+                    + Ajouter à la liste
+                </button>
+            </form>
+        </div>
+
+        <!-- Récapitulatif -->
+        <div class="space-y-6">
+            {% for c in clients %}
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="font-bold text-gray-900 border-b pb-2 mb-4 flex justify-between">
+                    <span>{{ c.nom }}</span>
+                    <span class="text-gray-400 text-sm font-normal">Passif</span>
+                </h3>
+                {% if c.charges %}
+                <ul class="space-y-3">
+                    {% for ch in c.charges %}
+                    <li class="flex justify-between text-sm bg-red-50 p-2 rounded border border-red-100">
+                        <span class="text-gray-700 font-medium">{{ ch.type }}</span>
+                        <span class="font-bold text-brand-red">
+                            - {{ "{:,.0f}".format(ch.montant).replace(',', '\u00a0') }} €
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-gray-400 text-xs italic text-center py-4">Aucune charge déclarée.</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <form method="POST">
+                <button type="submit" name="finaliser_charges" value="1"
+                        class="w-full bg-brand-red text-white py-4 rounded-xl font-bold hover-brand-red shadow-lg transform hover:scale-[1.02] transition">
+                    Passer au calcul du PTZ →
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

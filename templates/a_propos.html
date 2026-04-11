@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    
+    <div class="bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-gray-100">
+        <h1 class="text-3xl font-black mb-8 border-b pb-4 text-gray-900 uppercase tracking-tight">Méthodologie de calcul</h1>
+        
+        <section class="mb-10">
+            <h2 class="text-xl font-bold text-brand-red mb-4 flex items-center">
+                <span class="mr-2">📊</span> 1. Capacité d'emprunt
+            </h2>
+            <p class="text-gray-600 mb-4 leading-relaxed">
+                Le simulateur calcule votre capacité de remboursement en respectant un taux d'endettement maximum de <strong>34 %</strong> (inférieur de 1 point par rapport à la normes HCSF, car c'est 35% de taux d'endettement - marge assurance emprunteur). Contrairement aux outils simplifiés, les revenus sont pondérés selon leur nature : 100 % pour les revenus stables (CDI, Fonctionnaires), et 70 % pour les revenus locatifs afin de simuler la prudence bancaire.
+            </p>
+        </section>
+
+        <section class="mb-10">
+            <h2 class="text-xl font-bold text-brand-red mb-4 flex items-center">
+                <span class="mr-2">⚖️</span> 2. Le Prêt à Taux Zéro (PTZ 2026)
+            </h2>
+            <p class="text-gray-600 mb-4">Le moteur de calcul Python intègre une boucle itérative qui analyse quatre piliers réglementaires :</p>
+            <ul class="list-none ml-2 space-y-4 text-gray-600">
+                <li class="flex items-start">
+                    <span class="text-brand-red mr-2">•</span>
+                    <span><strong>Le Zonage :</strong> Déterminé par la commune (Zones A, B1, B2 ou C) selon la liste officielle 2026.</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-brand-red mr-2">•</span>
+                    <span><strong>Le Revenu Fiscal (RFR) :</strong> Vérification de l'éligibilité en fonction du nombre d'occupants et des plafonds de ressources N-2.</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-brand-red mr-2">•</span>
+                    <span><strong>Le Système de Tranches :</strong> L'algorithme divise le RFR par un coefficient familial pour vous affecter à l'une des 4 tranches, déterminant votre <strong>quotité</strong> (jusqu'à 50 %) et votre <strong>différé de remboursement</strong>.</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-brand-red mr-2">•</span>
+                    <span><strong>Le Plafond d'opération :</strong> Le montant final du PTZ est automatiquement écrêté selon les limites de coût d'opération définies par la loi.</span>
+                </li>
+            </ul>
+        </section>
+
+        <div class="bg-gray-50 p-6 rounded-xl italic text-sm text-gray-500 border-l-4 border-gray-200">
+            Note : Les résultats sont fournis à titre indicatif selon les conditions du marché d'avril 2026. Seul un accord de principe d'un établissement bancaire après étude de pièces justificatives fait foi.
+        </div>
+    </div>
+
+    <div class="bg-gray-900 rounded-3xl p-8 md:p-10 text-white shadow-xl relative overflow-hidden">
+        <div class="flex flex-col md:flex-row items-center gap-8 relative z-10">
+            <div class="flex-grow text-center md:text-left">
+                <h2 class="text-2xl font-bold mb-4">À propos de l'auteur</h2>
+                <p class="text-gray-300 leading-relaxed mb-6">
+                    Je suis <strong>Rémy</strong>, conseiller bancaire et développeur Python. Passionné par la finance et le code, j'ai développé cet outil pour automatiser les calculs de lissage complexes et offrir une estimation gratuite, précise et sans publicité pour les futurs propriétaires.
+                </p>
+                <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                    <a href="https://github.com/RemyNg22" target="_blank" class="bg-white/10 hover:bg-white/20 transition px-5 py-2.5 rounded-xl flex items-center text-sm font-medium">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        GitHub
+                    </a>
+                    <a href="mailto:remyng22@gmail.com" class="bg-brand-red hover:bg-red-700 transition px-5 py-2.5 rounded-xl flex items-center text-sm font-bold">
+                        📧 remyng22@gmail.com
+                    </a>
+                </div>
+            </div>
+            <div class="hidden md:block w-px h-32 bg-white/10"></div>
+            <div class="text-center">
+                <div class="text-4xl font-black text-brand-red mb-1">2026</div>
+                <div class="text-[10px] uppercase tracking-[0.2em] opacity-50 font-bold">Version Engine v2.4</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

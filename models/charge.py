@@ -2,7 +2,11 @@ class Charge:
 
     CATEGORIE_CHARGE = (
         "Loyer persistant",
-        "Crédit"
+        "Crédit Immoblier persistant",
+        "Crédit Auto",
+        "Crédit Consommation",
+        "Pension alimentaire",
+        "Autre charge"
     )
 
     def __init__(self,

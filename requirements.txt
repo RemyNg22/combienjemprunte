@@ -1,3 +1,6 @@
+Flask
+Flask-Session
+redis
 pandas
 openpyxl
-flask
+python-dotenv

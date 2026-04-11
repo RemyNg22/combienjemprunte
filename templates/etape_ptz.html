@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto mb-4">
+    <a href="javascript:history.back()" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-brand-red transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Retour à l'étape précédente
+    </a>
+</div>
+<div class="max-w-2xl mx-auto">
+
+    <!-- Bandeau pédagogique -->
+    <div class="bg-blue-50 border border-blue-100 rounded-2xl p-5 mb-6 flex gap-4">
+        <div>
+            <p class="font-bold text-blue-900 mb-1">Étape 4 sur 4 — Prêt à Taux Zéro (PTZ)</p>
+            <p class="text-sm text-blue-700 leading-relaxed">
+                Le PTZ est réservé aux <strong>primo-accédants</strong> (vous ne devez pas avoir été propriétaire 
+                de votre résidence principale au cours des <strong>2 dernières années</strong>).
+                Il permet d'emprunter une partie sans payer d'intérêts, financé par l'État.
+                Remplissez cette étape pour savoir si vous y avez droit et quel montant vous obtiendriez.
+                <span class="font-semibold">Si vous n'êtes pas primo-accédant</span>, cliquez sur "Calculer sans le PTZ" en bas.
+            </p>
+        </div>
+    </div>
+
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+        <div class="flex items-center space-x-4 mb-8">
+            <div class="bg-brand-red text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">4</div>
+            <h1 class="text-2xl font-bold italic">Localisation & Éligibilité PTZ</h1>
+        </div>
+
+        {% if error %}
+        <div class="bg-red-50 text-red-700 p-4 rounded-lg mb-6 border border-red-100 text-sm">⚠️ {{ error }}</div>
+        {% endif %}
+
+        <form method="POST" id="ptz-form" class="space-y-6">
+
+            <!-- Localisation avec autocomplete -->
+            <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                <h3 class="text-sm font-bold text-gray-400 uppercase mb-1 tracking-wider">Localisation du projet</h3>
+                <p class="text-xs text-gray-400 mb-4">
+                    La zone PTZ (A, B1, B2 ou C) détermine le montant maximal du prêt et les plafonds de revenus.
+                    Les zones A et B1 correspondent aux grandes villes (Paris, Lyon…), la zone C aux zones rurales.
+                </p>
+
+                <div class="space-y-4">
+                    <!-- Champ autocomplete commune -->
+                    <div class="relative">
+                        <label class="block text-sm font-semibold mb-1">Commune du projet</label>
+                        <input type="text" id="commune-input" name="commune"
+                               placeholder="Tapez une ville…"
+                               autocomplete="off"
+                               class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-red-200 outline-none border-gray-300 uppercase"
+                               required>
+                        <ul id="commune-suggestions"
+                            class="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 hidden max-h-60 overflow-y-auto text-sm">
+                        </ul>
+                        <p class="text-xs text-gray-400 mt-2 italic">
+                            Référentiel officiel septembre 2025. La zone est affichée automatiquement.
+                        </p>
+                    </div>
+
+                    <!-- Zone détectée -->
+                    <div id="zone-detected" class="hidden p-3 bg-green-50 border border-green-200 rounded-lg text-sm font-semibold text-green-800"></div>
+
+                    <!-- Fallback zone manuelle -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-gray-500">
+                            Zone manuelle
+                            <span class="font-normal text-gray-400">(si commune non trouvée ci-dessus)</span>
+                        </label>
+                        <select name="zone" id="zone-select" class="w-full p-3 border rounded-lg bg-white outline-none border-gray-300 text-gray-500">
+                            <option value="">— laisser vide —</option>
+                            <option value="A">Zone A (Paris, Côte d'Azur…)</option>
+                            <option value="B1">Zone B1 (Grandes métropoles, Île-de-France hors Paris…)</option>
+                            <option value="B2">Zone B2 (Villes moyennes…)</option>
+                            <option value="C">Zone C (Reste du territoire)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Foyer -->
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                <h3 class="text-sm font-bold text-gray-400 uppercase mb-1 tracking-wider">Situation du foyer</h3>
+                <p class="text-xs text-gray-400 mb-4">
+                    Le <strong>Revenu Fiscal de Référence (RFR)</strong> se trouve sur votre avis d'imposition 2025 
+                    (revenus 2024). Si vous achetez en couple, additionnez les RFR des deux avis d'imposition.
+                    Ce montant conditionne votre éligibilité et votre tranche PTZ.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Revenu Fiscal de Référence (RFR)</label>
+                        <div class="relative">
+                            <input type="number" name="rfr" min="0" step="1"
+                                   placeholder="Ex : 35 000"
+                                   class="w-full p-3 border rounded-lg outline-none border-gray-300 pr-8">
+                            <span class="absolute right-3 top-3 text-gray-400">€</span>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-1">
+                            Laissez vide pour une simulation sans PTZ.
+                        </p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Nb total de personnes du foyer</label>
+                        <input type="number" name="nb_personnes"
+                               value="{{ nb_emprunteurs }}"
+                               min="{{ nb_emprunteurs }}"
+                               class="w-full p-3 border rounded-lg outline-none border-gray-300" required>
+                        <p class="text-[10px] text-gray-400 mt-1">
+                            Incluez les emprunteurs <strong>+ les enfants</strong> à charge.
+                            Minimum {{ nb_emprunteurs }} (nb d'emprunteurs saisis).
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Durée -->
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                <h3 class="text-sm font-bold text-gray-400 uppercase mb-1 tracking-wider">Durée du crédit classique</h3>
+                <p class="text-xs text-gray-400 mb-3">
+                    Plus la durée est longue, plus la mensualité est faible mais plus les intérêts sont élevés.
+                    Le PTZ a sa propre durée (définie par votre tranche de revenus), indépendante du crédit classique.
+                </p>
+                <select name="duree_annees" class="w-full p-3 border rounded-lg bg-gray-50 outline-none border-gray-300 font-medium">
+                    <option value="7">7 ans (Taux ~3,18 %)</option>
+                    <option value="10">10 ans (Taux ~3,35 %)</option>
+                    <option value="15">15 ans (Taux ~3,52 %)</option>
+                    <option value="20">20 ans (Taux ~3,61 %)</option>
+                    <option value="25" selected>25 ans (Taux ~3,70 %)</option>
+                </select>
+            </div>
+
+            <!-- Actions -->
+            <div class="pt-2 flex flex-col gap-4">
+                <button type="submit"
+                        class="w-full bg-brand-red text-white py-4 rounded-xl font-bold hover:opacity-90 transition shadow-lg text-lg">
+                    Calculer ma capacité d'achat →
+                </button>
+                <button type="submit" name="skip_ptz" value="1"
+                        class="text-gray-400 text-xs hover:text-gray-600 transition underline decoration-dotted text-center">
+                    Je ne suis pas primo-accédant — calculer sans le PTZ (ancien uniquement)
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let debounceTimer = null;
+
+const input = document.getElementById('commune-input');
+const suggestions = document.getElementById('commune-suggestions');
+const zoneDetected = document.getElementById('zone-detected');
+const zoneSelect = document.getElementById('zone-select');
+
+input.addEventListener('input', function () {
+    clearTimeout(debounceTimer);
+    const q = this.value.trim();
+    if (q.length < 2) {
+        suggestions.classList.add('hidden');
+        zoneDetected.classList.add('hidden');
+        return;
+    }
+    debounceTimer = setTimeout(() => fetchCommunes(q), 250);
+});
+
+function fetchCommunes(query) {
+    fetch(`https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(query)}&fields=nom,codesPostaux,codeDepartement&boost=population&limit=8`)
+        .then(r => r.json())
+        .then(data => {
+            suggestions.innerHTML = '';
+            if (!data.length) {
+                suggestions.classList.add('hidden');
+                return;
+            }
+            data.forEach(c => {
+                const cp = c.codesPostaux?.[0] || '';
+                const li = document.createElement('li');
+                li.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between';
+                li.innerHTML = `<span class="font-medium">${c.nom.toUpperCase()}</span><span class="text-gray-400 text-xs">${cp}</span>`;
+                li.addEventListener('click', () => {
+                    input.value = c.nom.toUpperCase();
+                    suggestions.classList.add('hidden');
+                    zoneDetected.classList.add('hidden');
+                });
+                suggestions.appendChild(li);
+            });
+            suggestions.classList.remove('hidden');
+        })
+        .catch(() => suggestions.classList.add('hidden'));
+}
+
+document.addEventListener('click', function (e) {
+    if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+        suggestions.classList.add('hidden');
+    }
+});
+</script>
+{% endblock %}

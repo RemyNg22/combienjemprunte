@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto mb-4">
+    <a href="javascript:history.back()" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-brand-red transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Retour à l'étape précédente
+    </a>
+</div>
+<div class="max-w-6xl mx-auto">
+
+    <div class="text-center mb-10">
+        <h1 class="text-3xl md:text-4xl font-black text-gray-900 mb-2 uppercase tracking-tight">
+            Vos résultats de simulation
+        </h1>
+        <p class="text-gray-500 text-sm">Estimation indicative — Conditions bancaires d'avril 2026 — Taux d'endettement max. 35 %</p>
+    </div>
+
+    <!-- Grille des cartes résultats -->
+    <div class="grid grid-cols-1 lg:grid-cols-{{ resultats|length }} gap-6 items-start mb-12">
+        {% for res in resultats %}
+
+        {% set is_ptz = res.type == 'avec_ptz' %}
+
+        <div class="bg-white rounded-3xl shadow-xl overflow-hidden border-2 transition transform hover:-translate-y-1
+                    {{ 'border-brand-red' if is_ptz else 'border-gray-200' }}">
+
+            <!-- En-tête -->
+            <div class="{{ 'bg-brand-red' if is_ptz else 'bg-gray-800' }} p-5 text-white text-center">
+                <span class="text-[10px] uppercase font-bold tracking-[0.2em] opacity-75">Scénario</span>
+                <h2 class="text-lg font-black uppercase leading-tight mt-0.5">
+                    {% if is_ptz %}
+                        Neuf &mdash; {{ res.type_bien | capitalize }}
+                        <span class="block text-xs font-normal opacity-80 normal-case mt-0.5">avec Prêt à Taux Zéro</span>
+                    {% else %}
+                        Ancien
+                        <span class="block text-xs font-normal opacity-80 normal-case mt-0.5">sans PTZ — marché classique</span>
+                    {% endif %}
+                </h2>
+            </div>
+
+            <div class="p-6">
+
+                <!-- Budget d'achat (chiffre phare) -->
+                <div class="text-center py-5 mb-5 bg-gray-50 rounded-2xl">
+                    <p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Budget d'achat estimé</p>
+                    <div class="text-4xl md:text-5xl font-black text-gray-900 leading-none">
+                        {{ "{:,.0f}".format(res.prix_bien).replace(',', '\u00a0') }}
+                        <span class="text-xl text-brand-red ml-1">€</span>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2">Montant du bien (hors frais de notaire + annexes)</p>
+                </div>
+
+                <!-- Composition du financement -->
+                <div class="mb-5">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Composition du financement</p>
+
+                    <!-- Barre de progression -->
+                    {% set total_fin = res.credit_classique + res.ptz + res.apport %}
+                    {% if total_fin > 0 %}
+                    {% set pct_credit = (res.credit_classique / total_fin * 100) | round(1) %}
+                    {% set pct_ptz = (res.ptz / total_fin * 100) | round(1) %}
+                    {% set pct_apport = (res.apport / total_fin * 100) | round(1) %}
+                    <div class="flex rounded-full overflow-hidden h-3 mb-3">
+                        <div class="bg-gray-700" style="width: {{ pct_credit }}%" title="Crédit classique"></div>
+                        {% if res.ptz > 0 %}
+                        <div class="bg-brand-red" style="width: {{ pct_ptz }}%" title="PTZ"></div>
+                        {% endif %}
+                        {% if res.apport > 0 %}
+                        <div class="bg-green-400" style="width: {{ pct_apport }}%" title="Apport"></div>
+                        {% endif %}
+                    </div>
+                    <div class="flex flex-wrap gap-3 text-[10px] text-gray-500 mb-4">
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-gray-700 inline-block"></span>Crédit</span>
+                        {% if res.ptz > 0 %}<span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-brand-red inline-block"></span>PTZ</span>{% endif %}
+                        {% if res.apport > 0 %}<span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-green-400 inline-block"></span>Apport</span>{% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Lignes de détail -->
+                    <div class="space-y-2 text-sm">
+
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span class="text-gray-500">Crédit classique</span>
+                            <span class="font-bold text-gray-900">
+                                {{ "{:,.0f}".format(res.credit_classique).replace(',', '\u00a0') }} €
+                            </span>
+                        </div>
+
+                        {% if res.ptz and res.ptz > 0 %}
+                        <div class="flex justify-between items-center py-2 border-b border-brand-red/20 bg-red-50 px-2 rounded-lg">
+                            <span class="text-brand-red font-semibold">Prêt à Taux Zéro</span>
+                            <span class="font-black text-brand-red">
+                                + {{ "{:,.0f}".format(res.ptz).replace(',', '\u00a0') }} €
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        {% if res.apport and res.apport > 0 %}
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span class="text-gray-500">Apport personnel</span>
+                            <span class="font-bold text-green-700">
+                                + {{ "{:,.0f}".format(res.apport).replace(',', '\u00a0') }} €
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100 text-xs text-gray-400 italic">
+                            <span>Frais (notaire + annexes)</span>
+                            <span>{{ "{:,.0f}".format(res.frais_estimes).replace(',', '\u00a0') }} €</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Mensualités -->
+                <div class="mb-5 bg-gray-50 rounded-xl p-4">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Mensualités</p>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Mensualité crédit classique</span>
+                            <span class="font-bold">{{ "{:,.0f}".format(res.mensualite_classique) }} €/mois</span>
+                        </div>
+                        {% if res.mensualite_ptz and res.mensualite_ptz > 0 %}
+                        <div class="flex justify-between text-brand-red">
+                            <span>+ Mensualité PTZ <span class="text-xs text-gray-400">(phase remb.)</span></span>
+                            <span class="font-bold">{{ "{:,.0f}".format(res.mensualite_ptz) }} €/mois</span>
+                        </div>
+                        <div class="flex justify-between border-t border-gray-200 pt-2 font-bold">
+                            <span class="text-gray-700">= Total mensualité max.</span>
+                            <span>{{ "{:,.0f}".format(res.mensualite_max) }} €/mois</span>
+                        </div>
+                        {% else %}
+                        <div class="flex justify-between border-t border-gray-200 pt-2 font-bold">
+                            <span class="text-gray-700">Mensualité totale</span>
+                            <span>{{ "{:,.0f}".format(res.mensualite_max) }} €/mois</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Coût total et économies -->
+                <div class="mb-5">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Coût du crédit</p>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-500">Intérêts crédit classique</span>
+                            <span class="font-semibold text-gray-700">
+                                {{ "{:,.0f}".format(res.cout_interets).replace(',', '\u00a0') }} €
+                            </span>
+                        </div>
+                        {% if res.ptz and res.ptz > 0 %}
+                        <div class="flex justify-between items-center p-2 bg-green-50 rounded-lg border border-green-100">
+                            <span class="text-green-700 font-semibold text-xs">✓ Économie grâce au PTZ</span>
+                            <span class="font-black text-green-700">
+                                ≈ {{ "{:,.0f}".format((res.ptz * 0.25)| round).replace(',', '\u00a0') }} €
+                            </span>
+                        </div>
+                        <p class="text-[10px] text-gray-400 italic">Estimation des intérêts économisés vs un crédit classique équivalent au taux en vigueur.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Badge PTZ détails -->
+                {% if is_ptz %}
+                <div class="border-t border-gray-100 pt-4">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Détails PTZ</p>
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                        <div class="bg-gray-50 rounded-lg p-2">
+                            <p class="text-gray-400 uppercase font-bold text-[9px]">Tranche</p>
+                            <p class="font-black text-gray-800 text-base">{{ res.tranche }}</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-2">
+                            <p class="text-gray-400 uppercase font-bold text-[9px]">Quotité</p>
+                            <p class="font-black text-gray-800 text-base">{{ (res.quotite * 100) | int }}%</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-2">
+                            <p class="text-gray-400 uppercase font-bold text-[9px]">Durée PTZ</p>
+                            <p class="font-black text-gray-800 text-base">{{ res.total_duree }} ans</p>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex justify-between text-[10px] text-gray-400">
+                        <span>Différé (sans remb.) : {{ res.duree_differe_p1 }} ans</span>
+                        <span>Remboursement : {{ res.duree_remboursement_p2 }} ans</span>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Note explicative appartement vs maison -->
+    {% if resultats | length > 1 %}
+    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-10 max-w-4xl mx-auto">
+        <p class="font-bold text-amber-800 mb-2 text-sm">Pourquoi le budget appartement peut-il différer de la maison ?</p>
+        <p class="text-amber-700 text-xs leading-relaxed">
+            Avec le PTZ, la quotité (part financée gratuitement) est plus élevée pour un appartement que pour une maison.
+            Un PTZ plus grand génère une mensualité de remboursement plus élevée sur sa phase active, 
+            ce qui peut réduire légèrement la capacité du crédit classique si vos revenus sont modestes.
+            <strong>L'avantage réel du PTZ appartement est le coût total du crédit</strong> : vous payez moins d'intérêts
+            sur la durée totale, grâce à la part empruntée gratuitement.
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- Avertissement et CTA -->
+    <div class="text-center space-y-4">
+        <a href="/"
+           class="inline-block bg-gray-900 text-white px-10 py-4 rounded-2xl font-bold hover:bg-gray-800 transition">
+            ↩ Faire une nouvelle simulation
+        </a>
+        <p class="text-xs text-gray-400 max-w-xl mx-auto leading-relaxed">
+            Résultats fournis à titre indicatif, sans valeur contractuelle.
+            Seule une banque peut établir une offre de prêt officielle après analyse complète de votre dossier.
+            Les taux affichés sont des moyennes du marché au 1er semestre 2026.
+        </p>
+    </div>
+
+</div>
+{% endblock %}
